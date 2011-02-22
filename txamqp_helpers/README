@@ -1,0 +1,13 @@
+Dan Siemon <dan@coverfire.com>
+March 2010
+
+A class which makes using txamqp with twistd easy. Hopefully something like this
+will eventually make its way into txamqp making this irrelevant.
+
+Requirements:
+    Twisted (tested with 8.2.0)
+    txamqp (bzr rev 39)
+
+Example:
+
+twistd -ny amqp.tac
