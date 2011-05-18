@@ -28,35 +28,35 @@ class AmqpProtocol(AMQClient):
     """The protocol is created and destroyed each time a connection is created and lost."""
 
     def connectionMade(self):
-	"""Called when a connection has been made."""
-	AMQClient.connectionMade(self)
+        """Called when a connection has been made."""
+        AMQClient.connectionMade(self)
 
         # Flag that this protocol is not connected yet.
         self.connected = False
 
-	# Authenticate.
-	deferred = self.start({"LOGIN": self.factory.user, "PASSWORD": self.factory.password})
-	deferred.addCallback(self._authenticated)
-	deferred.addErrback(self._authentication_failed)
+        # Authenticate.
+        deferred = self.start({"LOGIN": self.factory.user, "PASSWORD": self.factory.password})
+        deferred.addCallback(self._authenticated)
+        deferred.addErrback(self._authentication_failed)
 
 
     def _authenticated(self, ignore):
-	"""Called when the connection has been authenticated."""
-	
-	
+        """Called when the connection has been authenticated."""
 
-	# Get a channel.
-	d = self.channel(1)
-	d.addCallback(self._got_channel)
-	d.addErrback(self._got_channel_failed)
+
+
+        # Get a channel.
+        d = self.channel(1)
+        d.addCallback(self._got_channel)
+        d.addErrback(self._got_channel_failed)
 
 
     def _got_channel(self, chan):
-	self.chan = chan
+        self.chan = chan
 
-	d = self.chan.channel_open()
-	d.addCallback(self._channel_open)
-	d.addErrback(self._channel_open_failed)
+        d = self.chan.channel_open()
+        d.addCallback(self._channel_open)
+        d.addErrback(self._channel_open_failed)
 
 
     def _channel_open(self, arg):
@@ -71,7 +71,7 @@ class AmqpProtocol(AMQClient):
 
         # Send any messages waiting to be sent.
         self.send()
-        
+
         # Fire the factory's 'initial connect' deferred if it hasn't already
         if not self.factory.initial_deferred_fired:
             self.factory.deferred.callback(self)
@@ -139,10 +139,10 @@ class AmqpProtocol(AMQClient):
         # First declare the exchange just in case it doesn't exist.
         yield self.chan.exchange_declare(exchange=exchange, type="direct", durable=True, auto_delete=False)
 
-	msg = Content(msg)
-	msg["delivery mode"] = 2 # 2 = persistent delivery.
-	d = self.chan.basic_publish(exchange=exchange, routing_key=routing_key, content=msg)
-	d.addErrback(self._send_message_err)
+        msg = Content(msg)
+        msg["delivery mode"] = 2 # 2 = persistent delivery.
+        d = self.chan.basic_publish(exchange=exchange, routing_key=routing_key, content=msg)
+        d.addErrback(self._send_message_err)
 
 
     def _send_message_err(self, error):
@@ -218,7 +218,7 @@ class AmqpFactory(protocol.ReconnectingClientFactory):
     def send_message(self, exchange=None, routing_key=None, msg=None):
         """Send a message."""
         # Add the new message to the queue.
-	self.queued_messages.append((exchange, routing_key, msg))
+        self.queued_messages.append((exchange, routing_key, msg))
 
         # This tells the protocol to send all queued messages.
         if self.p != None:
